@@ -1,0 +1,113 @@
+{% extends 'trialProjApp/base.html' %}
+{% block content %}
+
+    <div class="container">
+        <h1>{{ meter.name }}</h1>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for m in meterDataList %}
+                    <tr>
+                        <td>{{ m.date }}</td>
+                        <td>{{ m.value }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <form action="{% url 'trial_app:uploadData' meter.name %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row my-3">
+                    <div class="col-md-6">
+                        <input type="text" name="meter_id" value="{{ meter.name }}" hidden>
+                        <div class="custom-file">
+                            <input class="form-control-file" type="file" id="file" name="file">
+                            <label class="custom-file-label" for="file">Выберите файл</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="submit" class="btn btn-success text-white">
+                            <i class="fa fa-upload" aria-hidden="true"></i> Upload File
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <a href="{% url 'trial_app:deleteAll' meter.name %}" class="btn btn-danger">Delete all</a>
+        </div>
+    </div>
+    <figure class="highcharts-figure">
+        <div class="containerChart"></div>
+    </figure>
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/series-label.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script>
+        var container = document.createElement('div');
+        document.body.appendChild(container);
+
+
+        window.chart = new Highcharts.Chart({
+            chart: {
+                renderTo: container,
+                height: 400
+            },
+            title: {
+                text: 'Infographics for {{ meter.name }}'
+            },
+
+            yAxis: {
+                title: {
+                    text: 'Values'
+                }
+            },
+
+            xAxis: {
+                type: 'datetime',
+                labels: {
+                    formatter: function () {
+                        return Highcharts.dateFormat('%b %Y', this.value);
+                    },
+                    title:{
+                        text: 'Duration'
+                    }
+                },
+                    categories: {{ yRangeSet }}
+                },
+
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle'
+                },
+
+                series: [{
+                    name: '{{meter.name}}',
+                    data: {{ xValues }}
+                }],
+
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom'
+                            }
+                        }
+                    }]
+                }
+            });
+    </script>
+
+{% endblock %}

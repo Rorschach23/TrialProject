@@ -1,0 +1,65 @@
+{% extends 'trialProjApp/base.html' %}
+
+{% block content %}
+
+    {% if meters_list %}
+        <div class="container">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Resource Type</th>
+                    <th>Unit</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for meter in meters_list %}
+                    <tr>
+                        <td><a href="{% url 'trial_app:detail' meter.name %}">{{ meter.name }}</a></td>
+                        <td>{{ meter.resource_type }}</td>
+                        <td>{{ meter.unit }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    {% elif response %}
+        <div class="container">
+            <div class="alert alert-danger">
+                <strong>Message</strong> {{ response }}
+            </div>
+            <a href="{% url 'trial_app:index' %}" class="btn btn-secondary">Restart Page...</a>
+        </div>
+    {% else %}
+        <div class="container">
+            <div class="alert alert-warning">
+                <strong>No meters are available.</strong>
+            </div>
+        </div>
+    {% endif %}
+    <div class="container">
+        <button class="btn btn-primary mr-0" data-toggle="modal" data-target="#createModal">Add Meter</button>
+    </div>
+
+
+    <div id="createModal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Meter</h5>
+                    <button class="close" data-dismiss="modal">×</button>
+                </div>
+                <form action="{% url 'trial_app:create' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        {{ form }}
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" value="Add meter" class="btn btn-secondary">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,7 @@
+db.sqlite3
+.idea/
+__pycache__/
+venv/
+trialProj\__pycache__
+trialProjApp\__pycache__
+trialProjApp\migrations\__pycache__
