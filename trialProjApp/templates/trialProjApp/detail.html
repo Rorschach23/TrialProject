@@ -38,6 +38,7 @@
                 </div>
             </form>
             <a href="{% url 'trial_app:deleteAll' meter.name %}" class="btn btn-danger">Delete all</a>
+            <a href="{% url 'trial_app:downloadCSV' %}" class="btn btn-warning">Download CSV</a>
         </div>
     </div>
     <figure class="highcharts-figure">

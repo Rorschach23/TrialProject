@@ -1,6 +1,7 @@
 from django import forms
 from .models import Meter
 
+
 class CreateForm(forms.ModelForm):
     ELECTRICITY = 'E'
     GAS = 'G'
