@@ -25,16 +25,12 @@ class TestViews(TestCase):
 class TestRW(TestCase):
 
     @classmethod
-    def setUpTestData(cls):
+    def set_up_test_data(cls):
         cls.tested_meter = Meter.objects.create(name='Meter_1', resource_type='G', unit='Unit 1')
-        cls.test_meter_data_one = MeterData.objects.create(date=date(2015, 11, 2), value=10135.0,
-                                                            meter_id=cls.tested_meter)
-        cls.test_meter_data_two = MeterData.objects.create(date=date(2015, 10, 5), value=10072.0,
-                                                            meter_id=cls.tested_meter)
-        cls.test_meter_data_three = MeterData.objects.create(date=date(2015, 9, 3), value=10059.0,
-                                                              meter_id=cls.tested_meter)
-        cls.test_meter_data_four = MeterData.objects.create(date=date(2015, 8, 2), value=10049.0,
-                                                             meter_id=cls.tested_meter)
+        cls.test_meter_data_one = MeterData.objects.create(date=date(2015, 11, 2), value=10135.0, meter_id=cls.tested_meter)
+        cls.test_meter_data_two = MeterData.objects.create(date=date(2015, 10, 5), value=10072.0, meter_id=cls.tested_meter)
+        cls.test_meter_data_three = MeterData.objects.create(date=date(2015, 9, 3), value=10059.0, meter_id=cls.tested_meter)
+        cls.test_meter_data_four = MeterData.objects.create(date=date(2015, 8, 2), value=10049.0, meter_id=cls.tested_meter)
 
     def test_create(self):
         self.assertTrue(isinstance(self.tested_meter, Meter))

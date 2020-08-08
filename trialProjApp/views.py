@@ -23,25 +23,25 @@ def index(request):
 
 def detail(request, meter_id):
     meter = get_object_or_404(Meter, pk=meter_id)
-    meterDataList = meter.meterdata_set.all().order_by('date')
-    rangeSet = [list((m.value, m.date.strftime('%Y-%m-%d'))) for m in meterDataList]
-    dump = json.dumps(rangeSet)
-    df = pd.DataFrame(rangeSet, columns=['ABSOLUTE VALUE', 'DATE'])
-    yRangeSet = [time.mktime(y.date.timetuple())*1000 for y in meterDataList]
-    xRangeSet = [x.value for x in meterDataList]
-    xValues = []
-    if len(xRangeSet) > 0:
-        xValues.append(xRangeSet[0])
-        for v in range(1, len(xRangeSet)):
-            xValues.append(abs(xRangeSet[v]-xRangeSet[v-1]))
-    df['RELATIVE VALUE'] = xValues
+    meter_data_list = meter.meterdata_set.all().order_by('date')
+    range_set = [list((m.value, m.date.strftime('%Y-%m-%d'))) for m in meter_data_list]
+    dump = json.dumps(range_set)
+    df = pd.DataFrame(range_set, columns=['ABSOLUTE VALUE', 'DATE'])
+    y_range_set = [time.mktime(y.date.timetuple())*1000 for y in meter_data_list]
+    x_range_set = [x.value for x in meter_data_list]
+    x_values = []
+    if len(x_range_set) > 0:
+        x_values.append(x_range_set[0])
+        for v in range(1, len(x_range_set)):
+            x_values.append(abs(x_range_set[v]-x_range_set[v-1]))
+    df['RELATIVE VALUE'] = x_values
     df.to_csv('trialProjApp/downloads/currentCSV.csv', columns=['ABSOLUTE VALUE', 'DATE', 'RELATIVE VALUE'], index=False)
     return render(request, 'trialProjApp/detail.html', {'meter': meter,
-                                                        'meterDataList': meterDataList,
+                                                        'meterDataList': meter_data_list,
                                                         'dump': dump,
-                                                        'xRangeSet': xRangeSet,
-                                                        'yRangeSet': yRangeSet[1:],
-                                                        'xValues': xValues[1:]})
+                                                        'xRangeSet': x_range_set,
+                                                        'yRangeSet': y_range_set[1:],
+                                                        'xValues': x_values[1:]})
 
 
 def create(request):
@@ -52,24 +52,24 @@ def create(request):
                                  form.cleaned_data['resource_type'],
                                  form.cleaned_data['unit'])
             try:
-                entity.createMeter()
+                entity.create_meter()
             except (KeyError, Meter.DoesNotExist):
                 return render(request, 'trialProjApp/index.html', {'response': 'Oops, something went wrong!'})
             else:
                 return HttpResponseRedirect(reverse('trial_app:index'))
 
 
-def deleteAll(request, meter_id):
+def delete_all(request, meter_id):
     try:
         m = MeterEntity(meter_id)
-        m.deleteAllData()
+        m.delete_all_data()
     except (KeyError, MeterData.DoesNotExist):
         return render(request, 'trialProjApp/index.html', {'response': 'Failure'})
     else:
         return HttpResponseRedirect(reverse('trial_app:detail', args=(meter_id,)))
 
 
-def uploadData(request, meter_id):
+def upload_data(request, meter_id):
     try:
         if request.method == 'POST' and request.FILES['file']:
             csv_file = pd.read_csv(request.FILES['file'])
@@ -81,14 +81,14 @@ def uploadData(request, meter_id):
                 str_text = line.decode()
                 dat.append(str_text)
             m = MeterEntity(name=meter_id)
-            m.loadData(dat)
+            m.load_data(dat)
     except Exception as e:
-        return render(request, 'trialProjApp/index.html', {'response': 'Failure : %s' %e })
+        return render(request, 'trialProjApp/index.html', {'response': 'Failure : %s' % e})
     else:
         return HttpResponseRedirect(reverse('trial_app:detail', args=(meter_id,)))
 
 
-def downloadCSV(request):
+def download_csv(request):
     fl_path = 'trialProjApp/downloads/currentCSV.csv'
     fp = open(fl_path, "rb")
     response = HttpResponse(fp.read())

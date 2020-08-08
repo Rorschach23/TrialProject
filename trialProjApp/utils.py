@@ -9,7 +9,7 @@ def validation(csv_file):
         for index, row in df.iterrows():
             e = validate_date(row['DATE'])
             if e:
-                return 'Row %d - Failure : %s Please, check the data and try to upload again!' % (index, e)
+                return 'Row of the csv - %d - Failure : %s Please, check the data and try to upload again!' % (index, e)
         s = pd.Series(df['VALUE'])
         s = s.diff().to_list()
         s = s[1:]
