@@ -9,7 +9,7 @@ import pandas as pd
 from .models import Meter, MeterData
 from .meterEntity import MeterEntity
 from .forms import CreateForm
-from .utils import validation
+from .utils import validation, prepare_detail
 
 # Create your views here.
 
@@ -24,24 +24,9 @@ def index(request):
 def detail(request, meter_id):
     meter = get_object_or_404(Meter, pk=meter_id)
     meter_data_list = meter.meterdata_set.all().order_by('date')
-    range_set = [list((m.value, m.date.strftime('%Y-%m-%d'))) for m in meter_data_list]
-    dump = json.dumps(range_set)
-    df = pd.DataFrame(range_set, columns=['ABSOLUTE VALUE', 'DATE'])
-    y_range_set = [time.mktime(y.date.timetuple())*1000 for y in meter_data_list]
-    x_range_set = [x.value for x in meter_data_list]
-    x_values = []
-    if len(x_range_set) > 0:
-        x_values.append(x_range_set[0])
-        for v in range(1, len(x_range_set)):
-            x_values.append(abs(x_range_set[v]-x_range_set[v-1]))
-    df['RELATIVE VALUE'] = x_values
-    df.to_csv('trialProjApp/downloads/currentCSV.csv', columns=['ABSOLUTE VALUE', 'DATE', 'RELATIVE VALUE'], index=False)
-    return render(request, 'trialProjApp/detail.html', {'meter': meter,
-                                                        'meterDataList': meter_data_list,
-                                                        'dump': dump,
-                                                        'xRangeSet': x_range_set,
-                                                        'yRangeSet': y_range_set[1:],
-                                                        'xValues': x_values[1:]})
+    ready_data = prepare_detail(meter_data_list)
+    ready_data['meter'] = meter
+    return render(request, 'trialProjApp/detail.html', ready_data)
 
 
 def create(request):
@@ -88,7 +73,13 @@ def upload_data(request, meter_id):
         return HttpResponseRedirect(reverse('trial_app:detail', args=(meter_id,)))
 
 
-def download_csv(request):
+def download_csv(request, meter_id):
+    meter = get_object_or_404(Meter, pk=meter_id)
+    meter_data_list = meter.meterdata_set.all().order_by('date')
+    ready_data = prepare_detail(meter_data_list)['dataTable']
+    ready_data.to_csv('trialProjApp/downloads/currentCSV.csv', columns=['ABSOLUTE VALUE', 'DATE', 'RELATIVE VALUE'],
+              index=False)
+
     fl_path = 'trialProjApp/downloads/currentCSV.csv'
     fp = open(fl_path, "rb")
     response = HttpResponse(fp.read())
