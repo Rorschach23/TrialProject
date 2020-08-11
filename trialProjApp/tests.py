@@ -31,10 +31,10 @@ class TestRW(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.tested_meter = Meter.objects.create(name='Meter_1', resource_type='G', unit='Unit 1')
-        cls.test_meter_data_one = MeterData.objects.create(date=date(2015, 11, 2), value=11200.0, meter_id=cls.tested_meter.name)
-        cls.test_meter_data_two = MeterData.objects.create(date=date(2015, 10, 5), value=11170.0, meter_id=cls.tested_meter.name)
-        cls.test_meter_data_three = MeterData.objects.create(date=date(2015, 9, 3), value=11153.0, meter_id=cls.tested_meter.name)
-        cls.test_meter_data_four = MeterData.objects.create(date=date(2015, 8, 2), value=11100.0, meter_id=cls.tested_meter.name)
+        cls.test_meter_data_one = MeterData.objects.create(date=date(2015, 11, 2), value=200.0, meter_id=cls.tested_meter.name)
+        cls.test_meter_data_two = MeterData.objects.create(date=date(2015, 10, 5), value=170.0, meter_id=cls.tested_meter.name)
+        cls.test_meter_data_three = MeterData.objects.create(date=date(2015, 9, 3), value=153.0, meter_id=cls.tested_meter.name)
+        cls.test_meter_data_four = MeterData.objects.create(date=date(2015, 8, 2), value=100.0, meter_id=cls.tested_meter.name)
 
     def test_create(self):
         self.assertTrue(isinstance(self.tested_meter, Meter))
