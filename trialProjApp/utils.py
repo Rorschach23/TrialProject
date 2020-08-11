@@ -14,7 +14,7 @@ def prepare_detail(meter_data_list):
     if len(x_range_set) > 0:
         x_values.append(x_range_set[0])
         for v in range(1, len(x_range_set)):
-            x_values.append(abs(x_range_set[v] - x_range_set[v - 1]))
+            x_values.append(x_range_set[v] - x_range_set[v - 1])
     df['RELATIVE VALUE'] = x_values
     ready_data = {'meterDataList': meter_data_list,
                   'dump': dump,

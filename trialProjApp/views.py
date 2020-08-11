@@ -1,10 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
-import json
 import mimetypes
 import os
-import time
 import pandas as pd
 from .models import Meter, MeterData
 from .meterEntity import MeterEntity
@@ -67,6 +65,8 @@ def upload_data(request, meter_id):
                 dat.append(str_text)
             m = MeterEntity(name=meter_id)
             m.load_data(dat)
+            if m.errors:
+                return render(request, 'trialProjApp/index.html', {'response': m.errors})
     except Exception as e:
         return render(request, 'trialProjApp/index.html', {'response': 'Failure : %s' % e})
     else:
@@ -79,7 +79,6 @@ def download_csv(request, meter_id):
     ready_data = prepare_detail(meter_data_list)['dataTable']
     ready_data.to_csv('trialProjApp/downloads/currentCSV.csv', columns=['ABSOLUTE VALUE', 'DATE', 'RELATIVE VALUE'],
               index=False)
-
     fl_path = 'trialProjApp/downloads/currentCSV.csv'
     fp = open(fl_path, "rb")
     response = HttpResponse(fp.read())
